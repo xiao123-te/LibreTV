@@ -1,0 +1,31 @@
+name: 'Upstream Sync'
+
+on:
+  schedule:
+    # 定时任务，每天 UTC 时间 0 点运行，可根据需要调整
+    - cron: '0 0 * * *'
+  # 同时支持手动触发
+  workflow_dispatch:
+
+jobs:
+  sync_latest_from_upstream:
+    runs-on: ubuntu-latest
+    name: Sync latest commits from upstream repo
+
+    steps:
+      # 步骤1：检出你的目标分支
+      - name: Checkout target repo
+        uses: actions/checkout@v3
+        with:
+          # 你的目标分支，通常是 main 或 master
+          ref: main
+
+      # 步骤2：添加上游仓库并拉取更新
+      - name: Sync upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v1.3
+        with:
+          target_sync_branch: main          # 你的目标分支
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # 使用自动生成的 Token
+          upstream_sync_repo: 原作者用户名/原项目名   # 例如：octocat/Hello-World
+          upstream_sync_branch: main        # 原项目的分支
